@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FlightControlWeb.Models
 {
-    public class ServerItem
+    public class Server
     {
         private string ServerID;
         private string ServerURL;

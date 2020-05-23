@@ -5,11 +5,14 @@ using System.Threading.Tasks;
 
 namespace FlightControlWeb.Models
 {
-    public class FlightPlanItem
+    public class Flights
     {
+        private string flight_id;
+        private double longtitude;
+        private double latitude;
         private int passengers;
         private string company_name;
-        private InitialLocation initialLocation;
-        private List<Segment> segments;
+        private string date_time;
+        bool is_external = false;
     }
 }
