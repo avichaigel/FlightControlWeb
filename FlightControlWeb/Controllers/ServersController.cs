@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FlightControlWeb.Controllers
 {
 	[Route("api/[controller]")]
-	public class ServersController1 : Controller
+	public class ServersController : Controller
 	{
 		// GET: api/<controller>
 		[HttpGet]
