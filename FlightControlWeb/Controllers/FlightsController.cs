@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FlightControlWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,11 +12,22 @@ namespace FlightControlWeb.Controllers
 	[Route("api/[controller]")]
 	public class FlightsController : Controller
 	{
+		private FlightsManager flightsManager = new FlightsManager();
 		// GET: api/<controller>
 		[HttpGet]
-		public IEnumerable<string> Get()
+		public Flights[] GetAllFlights([FromQuery(Name = "relative_to")] string relative_to)
 		{
-			return new string[] { "value1", "value2" };
+			Flights[] flights;
+			string request = Request.QueryString.Value;
+			bool isExternal = request.Contains("sync_all"); //TODO maybe change name of boolean
+			if (!isExternal)
+			{
+				return flightsManager.GetActiveFlights(relative_to);
+			}
+			else
+			{
+
+			}
 		}
 
 		// GET api/<controller>/5
