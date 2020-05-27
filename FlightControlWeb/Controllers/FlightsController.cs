@@ -15,18 +15,17 @@ namespace FlightControlWeb.Controllers
 		private FlightsManager flightsManager = new FlightsManager();
 		// GET: api/<controller>
 		[HttpGet]
-		public Flights[] GetAllFlights([FromQuery(Name = "relative_to")] string relative_to)
+		public Object GetAllFlights([FromQuery(Name = "relative_to")] string relativeTo)
 		{
-			Flights[] flights;
 			string request = Request.QueryString.Value;
 			bool isExternal = request.Contains("sync_all"); //TODO maybe change name of boolean
 			if (!isExternal)
 			{
-				return flightsManager.GetActiveFlights(relative_to);
+				return flightsManager.GetActiveFlights(relativeTo, isExternal);
 			}
 			else
 			{
-
+				return Ok();
 			}
 		}
 
