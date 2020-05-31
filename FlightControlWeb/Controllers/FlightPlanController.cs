@@ -44,7 +44,7 @@ namespace FlightControlWeb.Controllers
 		public ActionResult<string> Post([FromBody]FlightPlan flightPlan)
 		{
             manager.AddPlan(flightPlan, plansDict);
-			//add if else and other return options
+			//TODO add if else and other return options
 			return Ok("Flight plan added successfully");
 		}
 
@@ -56,7 +56,7 @@ namespace FlightControlWeb.Controllers
 
 		// DELETE api/<controller>/5
 		[HttpDelete("{id}")]
-		public void Delete(int id)
+		public void Delete(string id)
 		{
 		}
 	}

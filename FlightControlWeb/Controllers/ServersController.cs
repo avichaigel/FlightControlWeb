@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FlightControlWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,11 +12,14 @@ namespace FlightControlWeb.Controllers
 	[Route("api/[controller]")]
 	public class ServersController : Controller
 	{
+		private ServersManager srvManager = new ServersManager();
+		public static Dictionary<string, string> servers = new Dictionary<string, string>();
+
 		// GET: api/<controller>
 		[HttpGet]
 		public IEnumerable<string> Get()
 		{
-			return new string[] { "value1", "value2" };
+			return servers.Values;
 		}
 
 		// GET api/<controller>/5
@@ -27,8 +31,11 @@ namespace FlightControlWeb.Controllers
 
 		// POST api/<controller>
 		[HttpPost]
-		public void Post([FromBody]string value)
+		public ActionResult<string> Post([FromBody]Server newServer)
 		{
+			srvManager.AddServer(newServer, servers);
+			//TODO add if else and other return options
+			return Ok("Flight plan added successfully");
 		}
 
 		// PUT api/<controller>/5
@@ -39,8 +46,16 @@ namespace FlightControlWeb.Controllers
 
 		// DELETE api/<controller>/5
 		[HttpDelete("{id}")]
-		public void Delete(int id)
+		public ActionResult<string> Delete(string id)
 		{
+			if (srvManager.DeleteServer(id))
+			{
+				return Ok("Flight deleted successfully");
+			}
+			else
+			{
+				return BadRequest("Id does not exist in server");
+			}
 		}
 	}
 }

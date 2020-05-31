@@ -50,8 +50,16 @@ namespace FlightControlWeb.Controllers
 
 		// DELETE api/<controller>/5
 		[HttpDelete("{id}")]
-		public void Delete(int id)
+		public ActionResult<string> Delete(string id)
 		{
+			if (flightsManager.DeleteFlight(id))
+			{
+				return Ok("Flight deleted successfully");
+			}
+			else
+			{
+				return BadRequest("Id does not exist in server");
+			}
 		}
 	}
 }

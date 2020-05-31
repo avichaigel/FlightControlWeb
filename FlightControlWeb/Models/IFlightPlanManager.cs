@@ -7,6 +7,7 @@ namespace FlightControlWeb.Models
 {
 	interface IFlightPlanManager
 	{
-		void AddPlan(FlightPlan flightPlan, Dictionary<string, FlightPlan> plansDict);
+		public void AddPlan(FlightPlan flightPlan, Dictionary<string, FlightPlan> plansDict);
+
 	}
 }
