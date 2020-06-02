@@ -12,10 +12,10 @@ namespace FlightControlWeb.Models
 /*        [IgnoreDataMember]
         public string id { get; set; }*/
 
-        [JsonPropertyName("server_id")]
+        [JsonPropertyName("ServerID")]
         public string Server_ID { get; set; }
 
-        [JsonPropertyName("server_url")]
+        [JsonPropertyName("ServerURL")]
         public string Server_URL { get; set; }
     }
 }

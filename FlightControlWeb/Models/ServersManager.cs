@@ -12,7 +12,13 @@ namespace FlightControlWeb.Models
 
 		public void AddServer(Server newServer, Dictionary<string, string> servers)
 		{
-			servers.Add(newServer.Server_ID, newServer.Server_URL);
+			if (!servers.ContainsKey(newServer.Server_ID))
+			{
+				servers.Add(newServer.Server_ID, newServer.Server_URL);
+			} else
+			{
+				throw new ArgumentException("ID is already in use");
+			}
 		}
 
 		public bool DeleteServer(string id)

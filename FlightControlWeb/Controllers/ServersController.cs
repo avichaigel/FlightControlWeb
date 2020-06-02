@@ -33,9 +33,15 @@ namespace FlightControlWeb.Controllers
 		[HttpPost]
 		public ActionResult<string> Post([FromBody]Server newServer)
 		{
-			srvManager.AddServer(newServer, servers);
-			//TODO add if else and other return options
-			return Ok("Flight plan added successfully");
+			try
+			{
+				srvManager.AddServer(newServer, servers);
+				return Ok("Server added successfully");
+			}
+			catch (Exception e)
+			{
+				return BadRequest(e);
+			}
 		}
 
 		// PUT api/<controller>/5
