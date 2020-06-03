@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using FlightControlWeb.Models;
@@ -17,9 +18,18 @@ namespace FlightControlWeb.Controllers
 		[HttpGet]
 		public Object GetActiveFlights([FromQuery(Name = "relative_to")] string relativeTo)
 		{
+			//validity check
+			string format = "yyyy-MM-ddTHH:mm:ssZ";
+			DateTime dateTime;
+			if (!DateTime.TryParseExact(relativeTo, format, CultureInfo.InvariantCulture,
+				DateTimeStyles.None, out dateTime))
+			{
+				return "relative_to format should be yyyy-MM-ddTHH:mm:ssZ";
+			}
+
 			string request = Request.QueryString.Value;
-			bool isExternal = request.Contains("sync_all"); //TODO maybe change name of boolean
-			List<Flights> actives = null;
+			bool isExternal = request.Contains("sync_all");
+			List<Flights> actives = new List<Flights>();
 			if (!isExternal)
 			{
 				actives = flightsManager.GetActiveInternals(relativeTo, isExternal);
@@ -60,7 +70,7 @@ namespace FlightControlWeb.Controllers
 		{
 			if (flightsManager.DeleteFlight(id))
 			{
-				return Ok("Flight deleted successfully");
+				return Ok("Flight no. " + id + " deleted successfully");
 			}
 			else
 			{

@@ -36,27 +36,18 @@ namespace FlightControlWeb.Models
 					break;
 				}
 			}
-			//determine last segment, if we are in the first segment
-			//then lastSeg == current segment
+			//determine last segment
 			if (segIndex > 1)
 			{
 				lastSeg = plan.Value.Segments[segIndex - 2];
 			}
+			//if we are in the first segment, then last segment == current segment
 			else if (segIndex == 1)
 			{
 				lastSeg = currSeg;
 			}
 			//calculate the timespan between the end of the last segment and relativeToDT
 			TimeSpan progress = relativeToDT - segStartDT;
-			/*double timeProgPercent = progressInSegment.TotalSeconds / currSeg.Timespan_Seconds;
-			//calculate distance in segment
-			double distance = Math.Sqrt(Math.Pow(currSeg.Latitude - lastSeg.Latitude, 2) +
-			   Math.Pow(currSeg.Longitude - lastSeg.Longitude, 2));
-			//calculate distance relatively to time
-			double distRelTime = timeProgPercent * distance;
-			//determine alpha
-			double alpha = Math.Cos(Math.Abs(currSeg.Latitude - lastSeg.Latitude) / distance) *
-				180.0 / Math.PI;*/
 			return new List<double>() {
 				lastSeg.Latitude + progress.TotalMinutes*(currSeg.Latitude-lastSeg.Latitude),
 				lastSeg.Longitude + progress.TotalMinutes*(currSeg.Longitude-lastSeg.Longitude),
