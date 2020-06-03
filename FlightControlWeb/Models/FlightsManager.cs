@@ -30,17 +30,19 @@ namespace FlightControlWeb.Models
 				segEndDT = initialDT.AddSeconds(cumulativeTimespan);
 				if ((DateTime.Compare(segEndDT, relativeToDT) >= 0))
 				{
+					//calculate beginning of current segments
 					segStartDT = segEndDT.AddSeconds(-seg.Timespan_Seconds);
 					currSeg = seg;
 					break;
 				}
 			}
-			//create lastSeg
-			if (segIndex > 0)
+			//determine last segment, if we are in the first segment
+			//then lastSeg == current segment
+			if (segIndex > 1)
 			{
-				lastSeg = plan.Value.Segments[segIndex - 1];
+				lastSeg = plan.Value.Segments[segIndex - 2];
 			}
-			else if (segIndex == 0)
+			else if (segIndex == 1)
 			{
 				lastSeg = currSeg;
 			}
@@ -56,8 +58,8 @@ namespace FlightControlWeb.Models
 			double alpha = Math.Cos(Math.Abs(currSeg.Latitude - lastSeg.Latitude) / distance) *
 				180.0 / Math.PI;*/
 			return new List<double>() {
-				lastSeg.Latitude + progress.TotalSeconds*(currSeg.Latitude-lastSeg.Latitude),
-				lastSeg.Longitude + progress.TotalSeconds*(currSeg.Longitude-lastSeg.Longitude),
+				lastSeg.Latitude + progress.TotalMinutes*(currSeg.Latitude-lastSeg.Latitude),
+				lastSeg.Longitude + progress.TotalMinutes*(currSeg.Longitude-lastSeg.Longitude),
 			};
 		}
 
@@ -71,12 +73,13 @@ namespace FlightControlWeb.Models
 			//between the plan's initial and final DateTime, add it to activeFlights array
 			foreach (KeyValuePair<string, FlightPlan> plan in FlightPlanController.plansDict)
 			{
+				FlightPlan currentPlan = plan.Value;
 				int totalFlightTime = 0;
 				//create a DateTime object out of the flight plan's Date_Time string
 				DateTime planInitialDT = TimeZoneInfo.ConvertTimeToUtc(DateTime.Parse(
-						plan.Value.Initial_Location.Date_Time));
+						currentPlan.Initial_Location.Date_Time));
 				//calculate total flight time in seconds
-				foreach (Segment seg in plan.Value.Segments)
+				foreach (Segment seg in currentPlan.Segments)
 				{
 					totalFlightTime += seg.Timespan_Seconds;
 				}
@@ -94,14 +97,12 @@ namespace FlightControlWeb.Models
 						Flight_ID = plan.Key,
 						Latitude = location[0],
 						Longitude = location[1],
-						Passengers = plan.Value.Passengers,
-						Company_Name = plan.Value.Company_Name,
+						Passengers = currentPlan.Passengers,
+						Company_Name = currentPlan.Company_Name,
 						Date_Time = relativeTo,
 						Is_External = isExternal
 					});
 				}
-/*					activeFlights.Add(new Flights(plan, isExternal, relativeTo, planInitialDT,
-						relativeToDT));*/
 			}
 			return activeFlights;
 		}
@@ -126,6 +127,7 @@ namespace FlightControlWeb.Models
 				}
 				//desirialize
 				externals = JsonConvert.DeserializeObject<List<Flights>>(strResult);
+				//add active flights from current server to allActives list which will be returned
 				allActives.AddRange(externals);
 			}
 			return allActives;
