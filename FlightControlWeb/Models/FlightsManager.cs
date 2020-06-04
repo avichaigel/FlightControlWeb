@@ -1,4 +1,5 @@
 ﻿using FlightControlWeb.Controllers;
+using Microsoft.EntityFrameworkCore.Internal;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -98,28 +99,58 @@ namespace FlightControlWeb.Models
 			return activeFlights;
 		}
 
+		public string getExternalFlights(string url)
+		{
+			WebRequest request = WebRequest.Create(url);
+			request.Method = "GET";
+			HttpWebResponse response = null;
+			try
+			{
+				response = (HttpWebResponse)request.GetResponse();
+			} catch (Exception e)
+			{
+				throw e;
+			}
+			string strResult = null;
+			using (Stream stream = response.GetResponseStream())
+			{
+				StreamReader sr = new StreamReader(stream);
+				strResult = sr.ReadToEnd();
+				sr.Close();
+			}
+			return strResult;
+		}
+
+		public void addToExternalsDict(List<Flights> externals, KeyValuePair<string, string> server)
+		{
+			foreach(var e in externals)
+			{
+				FlightsController.externalActiveFlights.Add(e.Flight_ID, server.Value);
+			}
+		}
+
 		public List<Flights> GetExternalInternal(string relativeTo, bool isExternal)
 		{
 			List<Flights> allActives = GetActiveInternals(relativeTo, isExternal); //internal flights
 			List<Flights> externals = new List<Flights>();
+			string strResult = null;
 			foreach (var server in ServersController.servers)
 			{
-				string strurl = String.Format(server.Value + "/api/Flights?relative_to=" + relativeTo);
-				WebRequest request = WebRequest.Create(strurl);
-				request.Method = "GET";
-				HttpWebResponse response = null;
-				response = (HttpWebResponse)request.GetResponse();
-				string strResult = null;
-				using (Stream stream = response.GetResponseStream())
+				string url = String.Format(server.Value + "/api/Flights?relative_to=" + relativeTo);
+				try
 				{
-					StreamReader sr = new StreamReader(stream);
-					strResult = sr.ReadToEnd();
-					sr.Close();
+					strResult = getExternalFlights(url);
+				} catch (Exception e)
+				{
+					throw new InvalidOperationException("Error in external server");
 				}
-				//desirialize
 				externals = JsonConvert.DeserializeObject<List<Flights>>(strResult);
 				//add active flights from current server to allActives list which will be returned
-				allActives.AddRange(externals);
+				if (externals.Any())
+				{
+					allActives.AddRange(externals);
+					addToExternalsDict(externals, server);
+				}
 			}
 			return allActives;
 		}

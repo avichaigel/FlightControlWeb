@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FlightControlWeb.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -33,9 +34,14 @@ namespace FlightControlWeb.Controllers
 				return flightPlan;
 			} else
 			{
-				//TODO change this to return a flight from external servers
-				//TODO if not found then maybe return 303
-				return null;
+				if (FlightsController.externalActiveFlights.TryGetValue(id, out string serverUrl))
+				{
+					string exPlan = new FlightsManager().getExternalFlights(serverUrl+"/api/FlightPlan/"+id);
+					return JsonConvert.DeserializeObject<FlightPlan>(exPlan);
+				} else
+				{
+					return BadRequest("No flight plan of id no. " + id + " was found");
+				}
 			}
 		}
 

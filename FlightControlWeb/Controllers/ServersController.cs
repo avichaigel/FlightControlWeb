@@ -17,9 +17,9 @@ namespace FlightControlWeb.Controllers
 
 		// GET: api/<controller>
 		[HttpGet]
-		public IEnumerable<string> Get()
+		public Dictionary<string,string> Get()
 		{
-			return servers.Values;
+			return servers;
 		}
 
 		// GET api/<controller>/5
@@ -40,7 +40,7 @@ namespace FlightControlWeb.Controllers
 			}
 			catch (Exception e)
 			{
-				return BadRequest(e);
+				return BadRequest(e.Message);
 			}
 		}
 
@@ -56,11 +56,12 @@ namespace FlightControlWeb.Controllers
 		{
 			if (srvManager.DeleteServer(id))
 			{
-				return Ok("Flight deleted successfully");
+				return Ok("Server no. " + id + " deleted successfully");
 			}
 			else
 			{
-				return BadRequest("Id does not exist in server");
+				return BadRequest("No external server of ID no." + id + 
+					" exists in this server's list");
 			}
 		}
 	}

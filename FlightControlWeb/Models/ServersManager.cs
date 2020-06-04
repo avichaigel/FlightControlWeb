@@ -12,9 +12,16 @@ namespace FlightControlWeb.Models
 
 		public void AddServer(Server newServer, Dictionary<string, string> servers)
 		{
-			if (!servers.ContainsKey(newServer.Server_ID))
+			if (!servers.ContainsKey(newServer.Server_ID)) //check if id exists
 			{
-				servers.Add(newServer.Server_ID, newServer.Server_URL);
+				if (!servers.Any(ser => ser.Value.Equals(newServer.Server_URL,
+					StringComparison.CurrentCultureIgnoreCase))) //check if URL exists
+				{
+					servers.Add(newServer.Server_ID, newServer.Server_URL);
+				} else
+				{
+					throw new ArgumentException("Server URL is already in the list");
+				}
 			} else
 			{
 				throw new ArgumentException("ID is already in use");

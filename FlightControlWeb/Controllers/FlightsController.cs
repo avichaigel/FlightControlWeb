@@ -14,6 +14,7 @@ namespace FlightControlWeb.Controllers
 	public class FlightsController : Controller
 	{
 		private FlightsManager flightsManager = new FlightsManager();
+		public static Dictionary<string, string> externalActiveFlights = new Dictionary<string, string>();
 		// GET: api/<controller>
 		[HttpGet]
 		public Object GetActiveFlights([FromQuery(Name = "relative_to")] string relativeTo)
@@ -36,7 +37,13 @@ namespace FlightControlWeb.Controllers
 			}
 			else
 			{
-				actives = flightsManager.GetExternalInternal(relativeTo, isExternal);				
+				try
+				{
+					actives = flightsManager.GetExternalInternal(relativeTo, isExternal);
+				} catch (Exception e)
+				{
+					return e.Message;
+				}
 			}
 			if (!actives.Any())
 			{
