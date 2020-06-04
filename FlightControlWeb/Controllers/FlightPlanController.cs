@@ -25,7 +25,7 @@ namespace FlightControlWeb.Controllers
 
 		// GET api/<controller>/5
 		[HttpGet("{id}")]
-		public Object Get(string id)
+		public async Task<Object> Get(string id)
 		{
 			//if it's in our dictionary return it, otherwise look for it in external servers
 			FlightPlan flightPlan;
@@ -36,7 +36,8 @@ namespace FlightControlWeb.Controllers
 			{
 				if (FlightsController.externalActiveFlights.TryGetValue(id, out string serverUrl))
 				{
-					string exPlan = new FlightsManager().getExternalFlights(serverUrl+"/api/FlightPlan/"+id);
+					string exPlan = await new FlightsManager().
+						getExternalFlights(serverUrl+"/api/FlightPlan/"+id);
 					return JsonConvert.DeserializeObject<FlightPlan>(exPlan);
 				} else
 				{
@@ -50,7 +51,6 @@ namespace FlightControlWeb.Controllers
 		public ActionResult<string> Post([FromBody]FlightPlan flightPlan)
 		{
             manager.AddPlan(flightPlan, plansDict);
-			//TODO add if else and other return options
 			return Ok("Flight plan added successfully");
 		}
 

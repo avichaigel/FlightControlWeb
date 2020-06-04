@@ -99,14 +99,15 @@ namespace FlightControlWeb.Models
 			return activeFlights;
 		}
 
-		public string getExternalFlights(string url)
+		public async Task<string> getExternalFlights(string url)
 		{
 			WebRequest request = WebRequest.Create(url);
 			request.Method = "GET";
 			HttpWebResponse response = null;
 			try
 			{
-				response = (HttpWebResponse)request.GetResponse();
+				WebResponse answer = await request.GetResponseAsync();
+				response = (HttpWebResponse)answer;
 			} catch (Exception e)
 			{
 				throw e;
@@ -125,11 +126,14 @@ namespace FlightControlWeb.Models
 		{
 			foreach(var e in externals)
 			{
-				FlightsController.externalActiveFlights.Add(e.Flight_ID, server.Value);
+				if (!FlightsController.externalActiveFlights.ContainsKey(e.Flight_ID))
+				{
+					FlightsController.externalActiveFlights.Add(e.Flight_ID, server.Value);
+				}
 			}
 		}
 
-		public List<Flights> GetExternalInternal(string relativeTo, bool isExternal)
+		public async Task<List<Flights>> GetExternalInternal(string relativeTo, bool isExternal)
 		{
 			List<Flights> allActives = GetActiveInternals(relativeTo, isExternal); //internal flights
 			List<Flights> externals = new List<Flights>();
@@ -139,8 +143,8 @@ namespace FlightControlWeb.Models
 				string url = String.Format(server.Value + "/api/Flights?relative_to=" + relativeTo);
 				try
 				{
-					strResult = getExternalFlights(url);
-				} catch (Exception e)
+					strResult = await getExternalFlights(url);
+				} catch
 				{
 					throw new InvalidOperationException("Error in external server");
 				}
@@ -162,10 +166,7 @@ namespace FlightControlWeb.Models
 				FlightPlanController.plansDict.Remove(id);
 				return true;
 			}
-			else
-			{
-				return false;
-			}
+			return false;
 		}
 	}
 }

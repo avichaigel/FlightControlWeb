@@ -17,7 +17,7 @@ namespace FlightControlWeb.Controllers
 		public static Dictionary<string, string> externalActiveFlights = new Dictionary<string, string>();
 		// GET: api/<controller>
 		[HttpGet]
-		public Object GetActiveFlights([FromQuery(Name = "relative_to")] string relativeTo)
+		public async Task<Object> GetActiveFlights([FromQuery(Name = "relative_to")] string relativeTo)
 		{
 			//validity check
 			string format = "yyyy-MM-ddTHH:mm:ssZ";
@@ -39,7 +39,7 @@ namespace FlightControlWeb.Controllers
 			{
 				try
 				{
-					actives = flightsManager.GetExternalInternal(relativeTo, isExternal);
+					actives = await flightsManager.GetExternalInternal(relativeTo, isExternal);
 				} catch (Exception e)
 				{
 					return e.Message;
