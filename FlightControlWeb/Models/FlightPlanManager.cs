@@ -39,22 +39,20 @@ namespace FlightControlWeb.Models
 
 		public void AddPlan(FlightPlan flightPlan, Dictionary<string, FlightPlan> plansDict)
 		{
+			/*			if (IsValid(flightPlan))
+						{
+							plansDict.Add(NewID(), flightPlan);
+							return true;
+						}
+						return false;*/
 			plansDict.Add(NewID(), flightPlan);
 
-/*			IDs id = new IDs();
-			flightPlan.ID = id.NewID(); //add id
-
-			//add segments and Initial_Location to their dbs
-			flightPlan.Segments.ForEach(x => {
-				x.id = id.NewID();
-				context.Segments.Add(x);
-				});
-
-			flightPlan.Initial_Location.id = id.NewID();
-			context.InitialLocs.Add(flightPlan.Initial_Location);
-			//add to the DB
-			context.FlightPlans.Add(flightPlan);
-			context.SaveChangesAsync();*/
 		}
+
+		/*		private bool IsValid(FlightPlan flightPlan)
+				{
+					bool validation = true;
+					if(!int.TryParse(flightPlan.Passengers, out int value))
+				}*/
 	}
 }

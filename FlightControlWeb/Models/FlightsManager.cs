@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -146,12 +147,13 @@ namespace FlightControlWeb.Models
 					strResult = await getExternalFlights(url);
 				} catch
 				{
-					throw new InvalidOperationException("Error in external server");
+					throw new Exception("Error in external server");
 				}
 				externals = JsonConvert.DeserializeObject<List<Flights>>(strResult);
 				//add active flights from current server to allActives list which will be returned
 				if (externals.Any())
 				{
+					externals = Validate(externals);
 					allActives.AddRange(externals);
 					addToExternalsDict(externals, server);
 				}
@@ -159,7 +161,39 @@ namespace FlightControlWeb.Models
 			return allActives;
 		}
 
-	public bool DeleteFlight(string id)
+		public bool IsValidDateTime(string datetimeCheck)
+		{
+			string format = "yyyy-MM-ddTHH:mm:ssZ";
+			DateTime dateTime;
+			if (!DateTime.TryParseExact(datetimeCheck, format, CultureInfo.InvariantCulture,
+				DateTimeStyles.None, out dateTime))
+			{
+				return false;
+			}
+			return true;
+		}
+
+		public List<Flights> Validate(List<Flights> externals)
+		{
+			foreach(var e in externals)
+			{
+				if ((e.Is_External.ToString() != "False") && (e.Is_External.ToString() != "True"))
+				{
+					externals.Remove(e);
+				}
+				else if (!int.TryParse(e.Passengers.ToString(), out int value))
+				{
+					externals.Remove(e);
+				}
+				else if (!IsValidDateTime(e.Date_Time.ToString()))
+				{
+					externals.Remove(e);
+				}
+			}
+			return externals;
+		}
+
+		public bool DeleteFlight(string id)
 		{
 			if (FlightPlanController.plansDict.ContainsKey(id))
 			{

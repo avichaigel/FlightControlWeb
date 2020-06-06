@@ -6,6 +6,7 @@ using FlightControlWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
+
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace FlightControlWeb.Controllers
@@ -50,8 +51,13 @@ namespace FlightControlWeb.Controllers
 		[HttpPost]
 		public ActionResult<string> Post([FromBody]FlightPlan flightPlan)
 		{
-            manager.AddPlan(flightPlan, plansDict);
-			return Ok("Flight plan added successfully");
+			if (flightPlan != null)
+			{
+				manager.AddPlan(flightPlan, plansDict);
+				return Ok("Flight plan added successfully");
+			}
+			return BadRequest("Flight plan was not added to server. " +
+				"Possibly one or more of the fields in the flight plan is incorrect");
 		}
 
 		// PUT api/<controller>/5
