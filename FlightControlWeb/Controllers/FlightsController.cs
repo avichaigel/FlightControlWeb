@@ -19,7 +19,7 @@ namespace FlightControlWeb.Controllers
 		[HttpGet]
 		public async Task<Object> GetActiveFlights([FromQuery(Name = "relative_to")] string relativeTo)
 		{
-			if (!flightsManager.IsValidDateTime(relativeTo)
+			if (!flightsManager.IsValidDateTime(relativeTo))
 			{
 				return "relative_to format should be yyyy-MM-ddTHH:mm:ssZ";
 			}
